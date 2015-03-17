@@ -1,83 +1,96 @@
 #include<iostream>
 #include<vector>
-#include<string>
 #include<map>
+#include<string>
 #include<algorithm>
 using namespace std;
 class Solution {
 public:
     vector<vector<int> > threeSum(vector<int> &num) {
-		sort(num.begin(),num.end());
         vector<vector<int>> result;
-		int i=0;
-		int lt;
-		while(!num.empty()){
-			int t=num[num.size()-1];
-			vector<vector<int>> temp;
-			num.pop_back();
-			if(i==0||t!=lt){
-				temp=twoSum(num,0-t);
-				for(int i=0;i<temp.size();i++){
-					temp[i].push_back(t);
-					sort(temp[i].begin(),temp[i].end());
-					result.push_back(temp[i]);
-				}
+		if(num.size()<3)
+			return result;
+		sort(num.begin(),num.end());
+		for(int i=0;i<=num.size()-3;i++){
+			if(num[i]>0)
+				break;
+			if(i!=0&&num[i]==num[i-1])
+				continue;
+			vector<vector<int>> temp=twoSum(num,abs(num[i]),i+1);
+			for(int k=0;k<temp.size();k++){
+				temp[k].insert(temp[k].begin(),num[i]);
+				result.push_back(temp[k]);
 			}
-			i++;
-			lt=t;
 		}
-		/*for(int i=0;i<result.size();i++)
-			sort(result[i].begin(),result[i].end());*/
-		/*sort(result.begin(),result.end());
-		result.erase(unique(result.begin(),result.end()),result.end());*/
 		return result;
     }
-
-	vector<vector<int>> twoSum(vector<int> &numbers, int target) {
+	vector<vector<int>> twoSum(vector<int> &numbers, int target,int begin) {
         vector<vector<int>> result;
-		map<int,int> m;
-		map<vector<int>,int> mi;
-		for(int i=0;i<numbers.size();i++){
-			if(m.find(target-numbers[i])!=m.end()){
-				vector<int> temp;
-				if(numbers[i]<target-numbers[i]){
+		for(int i=begin;i<=numbers.size()-1;i++){
+			if(numbers[i]>target)
+				break;
+			if(i!=begin&&numbers[i]==numbers[i-1])
+				continue;
+			for(int j=i+1;j<numbers.size();j++){
+				if(j!=i+1&&numbers[j]==numbers[j-1])
+					continue;
+				if(numbers[i]+numbers[j]>target)
+					break;
+				if(numbers[i]+numbers[j]==target){
+					vector<int> temp;
 					temp.push_back(numbers[i]);
-					temp.push_back(target-numbers[i]);
-				}
-				else{
-					temp.push_back(target-numbers[i]);
-					temp.push_back(numbers[i]);
-				}
-				if(mi.find(temp)==mi.end()){
+					temp.push_back(numbers[j]);
 					result.push_back(temp);
-					mi[temp]=i;
 				}
-			}
-			else{
-				m[numbers[i]]=i;
 			}
 		}
 		return result;
     }
 };
-
-int main(){
-	int n;
-	Solution test;
-	while(1){
-		cin>>n;
-		vector<int> input;
-		vector<vector<int>> result;
-		int t;
-		for(int i=0;i<n;i++){
-			cin>>t;
-			input.push_back(t);
+vector<int> getInt(string buf){
+	vector<int> num;
+	int temp=0;
+	char c;
+	for(int i=0;i!=buf.size();i++){
+		if(buf[i]!=','){
+			c=buf.at(i);
+			temp=temp*10+atoi(&c);
 		}
-		result=test.threeSum(input);
-		for(int i=0;i<result.size();i++){
-			for(int j=0;j<result[i].size();j++)
-				cout<<result[i][j]<<" , ";
+		else{
+			num.push_back(temp);
+			temp=0;
+		}
+	}
+	num.push_back(temp);
+	return num;
+}
+vector<int> setdata(){
+	string temp;
+	cin>>temp;
+	return getInt(temp);
+}
+int main(){
+	vector<int> input;
+	vector<vector<int>> output;
+	Solution test;
+	int count;
+	while(1){
+		cin>>count;
+		for(int i=0;i<count;i++){
+			int n;
+			cin>>n;
+			input.push_back(n);
+		}
+		output=test.threeSum(input);
+		cout<<"now print final result"<<endl;
+		for(int i=0;i<output.size();i++){
+			for(int j=0;j<output[0].size();j++){
+				cout<<output[i][j]<<" , ";
+			}
 			cout<<endl;
 		}
 	}
+	return -1;
 }
+/*
+wrong case: [0,0,0]*/
